@@ -737,9 +737,14 @@ em.dot { font-style: normal; -webkit-text-emphasis: filled dot; text-emphasis: f
 .gk-card-src { font-size: 13px; color: var(--ink-2); }
 .gk-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
 .gk-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0 0; color: var(--muted); font-size: 13.5px; }
-.gk-review-box { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); max-width: 46em; }
-.gk-review-box .badge { flex: none; margin-top: 2px; }
-.gk-review-box p { margin: 0; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
+.gk-review-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
+.gk-review-k { color: var(--muted); }
+.gk-pending-link { font-size: 13px; }
+.gk-review-more > summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+.gk-review-more[open] { flex-basis: 100%; }
+.gk-review-more-body { margin-top: 6px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); max-width: 46em; }
+.gk-review-more-body p { margin: 0; line-height: 1.7; overflow-wrap: anywhere; }
+.gk-review-more-body p + p { margin-top: 4px; }
 .gk-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 12px; font-size: 13px; color: var(--muted); }
 .gk-legend > span { white-space: nowrap; }
 .gk-legend em.dot, .gk-legend u, .gk-legend .gk-wave { color: var(--ink-2); }
@@ -824,13 +829,57 @@ u.gk-line { text-decoration: underline; text-decoration-thickness: 1px; text-und
 .gk-skill-nav p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0; }
 .gk-skill-nav p + p { margin-top: 8px; }
 .gk-skill-nav span { color: var(--muted); }
+/* 高考文言文 V1.2：主栏 + 右栏外壳（.gk-shell，只用于总入口和详情页）。
+   ≥1024px：右栏 sticky，在 grid 容器内滚动，不会盖住 footer；<1024px：单栏，右栏隐藏，卡片放进页头下默认收起的「快速导航」。 */
+.gk-rail { display: none; }
+.gk-main { min-width: 0; }
+.gk-qnav { margin: 4px 0 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.gk-qnav > summary { display: flex; align-items: center; min-height: 44px; padding: 8px 16px; cursor: pointer; list-style: none; font-weight: 600; }
+.gk-qnav > summary::-webkit-details-marker { display: none; }
+.gk-qnav > summary::after { content: "展开"; margin-left: auto; font-size: 12.5px; font-weight: 400; color: var(--accent); }
+.gk-qnav[open] > summary { border-bottom: 1px solid var(--line); }
+.gk-qnav[open] > summary::after { content: "收起"; }
+.gk-qnav-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding: 12px; font-size: 13.5px; }
+.gk-shell .er-card { min-width: 0; }
+.gk-rail-years { margin-top: 2px; }
+.gk-rail-status { list-style: none; margin: 0; padding: 0; }
+.gk-rail-status li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 3px 0; color: var(--ink-2); }
+.gk-rail-more { margin: 8px 0 0; }
+.gk-rail-info { display: grid; grid-template-columns: 3em minmax(0, 1fr); gap: 4px 8px; margin: 0; }
+.gk-rail-info dt { color: var(--muted); }
+.gk-rail-info dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+.gk-rail-info small { display: block; color: var(--muted); font-size: 11.5px; }
+@media (min-width: 1024px) {
+  .wrap.gk-shell { display: grid; grid-template-columns: minmax(0, 1fr) 264px; gap: 0 40px; align-items: start; }
+  .gk-shell > * { grid-column: 1 / -1; }
+  .gk-shell > .gk-main { grid-column: 1; }
+  .gk-shell > .gk-qnav { display: none; }
+  .gk-shell > .gk-rail { grid-column: 2; display: flex; flex-direction: column; gap: 12px; position: sticky; top: calc(var(--header-h) + 20px); max-height: calc(100vh - var(--header-h) - 36px); overflow-y: auto; overscroll-behavior: contain; margin-top: 24px; font-size: 13.5px; }
+  /* 右栏已有审校统计，总入口主栏不再重复 */
+  .gk-index .gk-main > .gk-status-note { display: none; }
+}
+/* 审校说明页 */
+.gk-about-list { margin: 0; padding-left: 1.4em; max-width: 46em; line-height: 1.8; }
+.gk-about-list li + li { margin-top: 4px; }
+.gk-about-status + .gk-about-status { margin-top: 18px; }
+.gk-about-status h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+.gk-about-status > p { margin: 0 0 6px; max-width: 46em; line-height: 1.75; color: var(--ink-2); }
+.gk-about-papers { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13.5px; }
+.gk-about-note, .gk-about-intro { margin: 14px 0 0; max-width: 46em; font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+.gk-about-intro { margin: 0 0 12px; }
+.gk-about-pending { list-style: none; margin: 0; padding: 0; max-width: 46em; }
+.gk-about-pending > li { padding: 10px 0; border-bottom: 1px dotted var(--line); }
+.gk-about-ph { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 4px; font-weight: 600; }
+.gk-about-ph small { color: var(--muted); font-weight: 400; }
+.gk-about-pending ul { margin: 0; padding-left: 1.3em; font-size: 14px; line-height: 1.75; color: var(--ink-2); }
+.gk-errata { font-size: 14px; line-height: 1.75; }
+.gk-errata h3:first-child { margin-top: 0; }
 @media (max-width: 999px) {
   .cl-step h4 { margin-top: 4px; }
 }
 @media (max-width: 720px) {
   .gk-ways-grid, .gk-skill-map { grid-template-columns: minmax(0, 1fr); }
   .gk-cards { grid-template-columns: minmax(0, 1fr); }
-  .gk-review-box { flex-direction: column; gap: 6px; }
   .gk-pager { grid-template-columns: minmax(0, 1fr); }
   .gk-pager a.next, .gk-pager .next.is-end { text-align: left; }
   .gk-pager .all { order: 3; }
