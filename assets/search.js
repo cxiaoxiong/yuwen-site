@@ -1,5 +1,6 @@
 // 全站搜索：索引在浏览器里做子串匹配（中文不需要分词，短语也能精确命中）。
-// 排序：标题完全相同 > 标题开头 > 标题包含 > 作者/主题等关键词 > 正文出现次数。
+// 排序：标题完全相同 > 标题开头 > 标题包含 > 关键词（整词相同高于包含）> 正文出现次数。
+// 每条结果显示类型标签（索引里的 y，如「文言真题」「实词」「作文课程」；旧索引没有 y 时显示类别 c）。
 // 索引分两层：打开页面先下「索引头」（每条的标题、关键词、册次、链接），标题和关键词立刻能搜；
 // 正文按「册 × 类别」分片，有搜索词时才下，只下当前筛选类别用得到的，小的类别先下，下完一类就重排一次。
 (function () {
@@ -22,7 +23,7 @@
   let shards = []; // { c, url, state: 0 未下载 | 1 下载中 | 2 已下载 | -1 失败, docs }
   let results = [];
   let shown = 0;
-  const LOAD_ORDER = ['课文', '古诗文', '文学常识', '虚词', '实词', '作文', '教师用书', '练习']; // 小的先下
+  const LOAD_ORDER = ['课文', '古诗文', '文学常识', '虚词', '实词', '高考文言文', '作文', '教师用书', '练习']; // 小的先下
 
   input.value = q;
   setCat(cat);
@@ -95,7 +96,8 @@
       if (d.tl === t) s += 1000;
       else if (d.tl.startsWith(t) && !(/\d$/.test(t) && /\d/.test(d.tl[t.length]))) s += 500; // 数字要整段对上：搜 C1 时 C10–C19 只算标题包含
       else if (inTitle) s += 300;
-      if (inKey) s += 120;
+      // 关键词按空格分成词：整词相同（作者名、卷名、别称）比只是包含更可靠
+      if (inKey) s += (d.ks || (d.ks = new Set(d.kl.split(/\s+/)))).has(t) ? 200 : 120;
       if (n) s += 20 + Math.min(n, 60) * 2;
     }
     // 课文正文优先于注释、赏析等衍生资料
@@ -104,27 +106,43 @@
     return s;
   }
 
+  // 摘要：取正文里命中词附近的一段（约 100 字），多个搜索词时优先取窗口里包含搜索词最多的位置；最多两段，窗口互不重叠。
+  // 段首尽量对齐到句子开头（往前 40 字内有句号等就从那里开始）。正文没有命中（只命中标题、关键词）时取正文开头。
   function snippets(d, terms) {
     const x = d.x;
     const xl = d.xl;
-    const out = [];
-    const used = [];
+    if (!x) return [];
+    const clip = (a, b) => (a > 0 ? '……' : '') + x.slice(a, b).replace(/\s+/g, ' ').trim() + (b < x.length ? '……' : '');
+    const hits = [];
     for (const t of terms) {
       let i = xl.indexOf(t);
-      while (i !== -1 && out.length < 2) {
-        if (!used.some((u) => Math.abs(u - i) < 60)) {
-          used.push(i);
-          const a = Math.max(0, i - 36);
-          const b = Math.min(x.length, i + t.length + 64);
-          out.push((a > 0 ? '……' : '') + x.slice(a, b).replace(/\s+/g, ' ') + (b < x.length ? '……' : ''));
-        }
+      for (let n = 0; i !== -1 && n < 80; n++) {
+        hits.push({ i, t });
         i = xl.indexOf(t, i + t.length);
-        if (out.length >= 2) break;
       }
-      if (out.length >= 2) break;
     }
-    if (!out.length && x) out.push(x.slice(0, 90).replace(/\s+/g, ' ') + (x.length > 90 ? '……' : ''));
-    return out;
+    if (!hits.length) return [clip(0, Math.min(x.length, 90))];
+    // 每个命中位置对应的摘要窗口 [a, b)：先往前找句首，再往后至少留出 64 字
+    const win = (h) => {
+      let a = Math.max(0, h.i - 36);
+      const stop = h.i > 0 ? Math.max(...['。', '！', '？', '；', '\n'].map((c) => x.lastIndexOf(c, h.i - 1))) : -1;
+      if (stop >= 0 && stop >= h.i - 40) a = stop + 1;
+      return { a, b: Math.min(x.length, Math.max(h.i + h.t.length + 64, a + 100)) };
+    };
+    const cands = hits.map((h) => ({ ...win(h), i: h.i }));
+    if (terms.length > 1) {
+      for (const c of cands) c.n = new Set(hits.filter((o) => o.i >= c.a && o.i + o.t.length <= c.b).map((o) => o.t)).size;
+      cands.sort((p, q) => q.n - p.n || p.i - q.i);
+    }
+    const used = [];
+    // 与已选窗口重叠的：合并后不超过 170 字就并成一段（两个词挨得近时都能露出来），否则跳过
+    for (const c of cands) {
+      const u = used.find((w) => c.a < w.b && w.a < c.b);
+      if (u) {
+        if (Math.max(u.b, c.b) - Math.min(u.a, c.a) <= 170) [u.a, u.b] = [Math.min(u.a, c.a), Math.max(u.b, c.b)];
+      } else if (used.length < 2) used.push({ a: c.a, b: c.b });
+    }
+    return used.map((w) => clip(w.a, w.b));
   }
 
   function highlight(text, terms) {
@@ -145,7 +163,7 @@
         const snips = snippets(d, q.toLowerCase().split(/\s+/).filter(Boolean));
         return `<li class="hit">
   <a class="hit-title" href="${linkFor(d)}">${highlight(d.t, terms)}</a>
-  <div class="hit-meta"><span class="cat cat-${d.c}">${d.c}</span><span>${escHtml(d.s)}</span></div>
+  <div class="hit-meta"><span class="cat cat-${d.c}">${escHtml(d.y || d.c)}</span><span>${escHtml(d.s)}</span></div>
   ${snips.map((s) => `<p class="hit-snip">${highlight(s, terms)}</p>`).join('')}
 </li>`;
       })

@@ -661,16 +661,20 @@ em.dot { font-style: normal; -webkit-text-emphasis: filled dot; text-emphasis: f
 .search-status { color: var(--muted); font-size: 13px; margin: 18px 0 6px; }
 .hits { list-style: none; padding: 0; margin: 0; }
 .hit { padding: 16px 0; border-bottom: 1px solid var(--line); }
-.hit-title { font: 600 17.5px/1.5 var(--font-read); color: var(--ink); letter-spacing: .03em; }
+.hit-title { font: 600 17.5px/1.5 var(--font-read); color: var(--ink); letter-spacing: .03em; overflow-wrap: anywhere; }
 .hit-title:hover { color: var(--accent); }
 .hit-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 12.5px; color: var(--muted); margin-top: 3px; }
-.cat { font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); }
+/* 副标题与类型标签同一行，放不下时在副标题内部折行，不整段掉到下一行 */
+.hit-meta > span:not(.cat) { flex: 1 1 12em; min-width: 0; }
+.cat { flex: none; white-space: nowrap; font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); }
 .cat-古诗文 { background: var(--seal-soft); color: var(--seal); }
 .cat-教师用书 { background: var(--accent-soft); color: var(--accent); }
 .cat-练习 { background: color-mix(in srgb, #c69a2c 18%, transparent); color: color-mix(in srgb, #8a6412 80%, var(--ink)); }
 .cat-实词, .cat-虚词, .cat-文学常识 { background: var(--seal-soft); color: var(--seal); }
+/* 高考文言文（真题、专项）：同属古诗文的印色，加一道细边与文言基础区分 */
+.cat-高考文言文 { background: var(--seal-soft); color: var(--seal); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--seal) 40%, transparent); }
 .cat-作文 { background: color-mix(in srgb, #5b6fb3 16%, transparent); color: color-mix(in srgb, #3e4f8c 80%, var(--ink)); }
-.hit-snip { margin: 8px 0 0; font: 14.5px/1.85 var(--font-read); color: var(--ink-2); }
+.hit-snip { margin: 8px 0 0; font: 14.5px/1.85 var(--font-read); color: var(--ink-2); overflow-wrap: anywhere; }
 .hit-snip + .hit-snip { margin-top: 2px; }
 .more { display: block; margin: 20px auto; }
 
