@@ -242,4 +242,34 @@
       });
     }
   }
+
+  // ───── 返回顶部：只在长页面（超过 2.5 屏）出现，向下滚过 1.5 屏后显示 ─────
+  // 首页不加（首页视觉保持不变）
+  const main = $('#main');
+  if (main && !document.body.classList.contains('page-home')) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'to-top';
+    btn.setAttribute('aria-label', '返回顶部');
+    btn.title = '返回顶部';
+    btn.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 10l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+    btn.addEventListener('click', () => {
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
+      if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+      main.focus({ preventScroll: true });
+    });
+    document.body.appendChild(btn);
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      const on = document.documentElement.scrollHeight > vh * 2.5 && window.scrollY > vh * 1.5;
+      btn.classList.toggle('is-on', on);
+      btn.tabIndex = on ? 0 : -1;
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
 })();
