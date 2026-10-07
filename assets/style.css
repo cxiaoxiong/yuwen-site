@@ -781,7 +781,54 @@ u.gk-line { text-decoration: underline; text-decoration-thickness: 1px; text-und
 .gk-pager .all { justify-content: center; text-align: center; }
 .gk-pager .is-end { display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font: 14px/1.5 var(--font-read); }
 .gk-pager .next.is-end { text-align: right; }
+/* 高考文言文 V1.1：真题库三入口、学习路径、四个专项页、详情页「继续专项练习」 */
+.gk-ways { margin-top: 26px; }
+.gk-ways + .gk-status-note { margin-top: 20px; }
+.gk-ways-grid, .gk-skill-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.gk-skill-map .cl-feature > p { margin-top: 4px; }
+.gk-skill-map .cl-feature b { color: var(--ink); font-weight: 600; }
+.gk-next-skill { margin: 26px 0 0; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.gk-next-skill h2 { margin: 0; font: 600 17px/1.4 var(--font-read); letter-spacing: .04em; }
+.gk-next-skill > p { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; }
+.gk-next-skill .act-links { margin-top: 10px; }
+.gk-route + .gk-route { margin-top: 30px; }
+.gk-route > h3 { margin: 0 0 4px; font: 600 19px/1.4 var(--font-read); letter-spacing: .06em; color: var(--seal); }
+.gk-route-intro { margin: 0 0 14px; color: var(--ink-2); font-size: 14.5px; line-height: 1.75; max-width: 46em; }
+.cl-step h4 { margin: 12px 0 4px; font: 600 16px/1.4 var(--font-read); letter-spacing: .04em; }
+.gk-route-note { margin: 14px 0 0; max-width: 46em; font-size: 14.5px; line-height: 1.75; }
+.gk-route-skills { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.gk-route-skills a { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: 15px/1.5 var(--font-read); }
+.gk-route-skills a:hover { border-color: var(--accent); text-decoration: none; }
+.gk-route-skills small { color: var(--muted); font: 12px var(--font-ui); }
+.gk-fix { list-style: none; margin: 0; padding: 0; max-width: 46em; }
+.gk-fix li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 8px 0; border-bottom: 1px dotted var(--line); font-size: 14.5px; }
+.gk-fix li > span:first-child { color: var(--ink-2); }
+.gk-fix li > span[aria-hidden] { color: var(--muted); }
+.gk-back { margin: 36px 0 0; font: 600 17px/1.6 var(--font-read); }
+.gk-method { margin: 0; padding-left: 1.6em; max-width: 46em; }
+.gk-method li { margin: 0 0 8px; line-height: 1.75; }
+.gk-method li b { margin-right: 8px; font-weight: 600; color: var(--ink); }
+.gk-method li span { color: var(--ink-2); font-size: 14.5px; }
+.gk-traps { margin: 0; padding-left: 1.4em; max-width: 46em; columns: 2 16em; column-gap: 28px; }
+.gk-traps li { margin: 0 0 6px; line-height: 1.7; font-size: 14.5px; color: var(--ink-2); break-inside: avoid; }
+.gk-skill-year { margin-top: 26px; }
+.gk-skill-year > h3 { margin: 0 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font: 600 18px/1.4 var(--font-read); letter-spacing: .06em; }
+.gk-item { padding: 0 0 14px; border-bottom: 1px dotted var(--line); }
+.gk-item-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0 0 8px; font: 600 15.5px/1.5 var(--font-read); }
+.gk-item-head small { margin-left: 6px; color: var(--muted); font: 12px var(--font-ui); }
+.gk-item-head .badge { font-family: var(--font-ui); font-weight: 400; }
+.gk-item-year { color: var(--seal); }
+.gk-item-back { margin: 0; font-size: 13.5px; }
+.gk-item-pending { margin: 0 0 8px; font-size: 13px; color: var(--muted); }
+.gk-skill-nav { margin: 36px 0 0; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 14px; }
+.gk-skill-nav p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin: 0; }
+.gk-skill-nav p + p { margin-top: 8px; }
+.gk-skill-nav span { color: var(--muted); }
+@media (max-width: 999px) {
+  .cl-step h4 { margin-top: 4px; }
+}
 @media (max-width: 720px) {
+  .gk-ways-grid, .gk-skill-map { grid-template-columns: minmax(0, 1fr); }
   .gk-cards { grid-template-columns: minmax(0, 1fr); }
   .gk-review-box { flex-direction: column; gap: 6px; }
   .gk-pager { grid-template-columns: minmax(0, 1fr); }
