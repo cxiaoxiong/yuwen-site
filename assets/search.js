@@ -12,6 +12,8 @@
   const listEl = document.querySelector('[data-search-results]');
   const moreBtn = document.querySelector('[data-search-more]');
   const PAGE = 40;
+  // 站名取自页面的 <meta name="application-name">（layout() 输出），不在脚本里另写一份
+  const SITE = (document.querySelector('meta[name="application-name"]') || {}).content || '';
 
   const params = new URLSearchParams(location.search);
   let q = (params.get('q') || '').trim();
@@ -195,7 +197,7 @@
     if (q) p.set('q', q);
     if (cat) p.set('cat', cat);
     history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : ''));
-    document.title = (q ? `${q} · 搜索` : '搜索') + ' · 语文备课室';
+    document.title = (q ? `${q} · 搜索` : '搜索') + (SITE ? ` · ${SITE}` : '');
   }
 
   let timer;

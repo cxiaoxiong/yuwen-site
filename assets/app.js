@@ -1,4 +1,4 @@
-// 语文备课室 —— 页面交互（无依赖）
+// 北冥有鱼 —— 页面交互（无依赖）
 (function () {
   'use strict';
   const $ = (s, el = document) => el.querySelector(s);
